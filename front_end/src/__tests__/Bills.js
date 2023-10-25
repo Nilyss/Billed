@@ -6,10 +6,12 @@ import 'whatwg-fetch' // https://www.npmjs.com/package/whatwg-fetch 'cause node-
 import {screen, waitFor} from "@testing-library/dom";
 import BillsUI from "../views/BillsUI.js";
 import {bills} from "../fixtures/bills.js";
-import {ROUTES_PATH} from "../constants/routes.js";
+import {ROUTES, ROUTES_PATH} from "../constants/routes.js";
 import {localStorageMock} from "../__mocks__/localStorage.js";
 import mockStore from '../__mocks__/store.js'
 import router from "../app/Router.js";
+import Bills from "../containers/Bills.js";
+import userEvent from '@testing-library/user-event'
 
 
 jest.mock('../app/Store.js', () => mockStore)
@@ -89,7 +91,7 @@ describe(`Given i'm a user connected as an employee`, () => {
             test('Fetches messages from an API and fails with 500 message error', async () => {
                 mockStore.bills.mockImplementationOnce(() => {
                     return {
-                        list : () => {
+                        list: () => {
                             return Promise.reject(new Error('Erreur 500'))
                         }
                     }
@@ -102,3 +104,31 @@ describe(`Given i'm a user connected as an employee`, () => {
         })
     })
 })
+
+// testing toggle modal
+// TODO FINISHING TEST INTEGRATION (fix it)
+describe(`When I am on Bills page, I click on the eye icon of a bill`, () => {
+    test(`Then the modal should appear, and the picture should be displayed`, () => {
+        Object.defineProperty(window, 'localStorage', {value: localStorageMock})
+        localStorage.setItem('user', JSON.stringify({type: 'Employee', email: 'a@a'}));
+        document.body.innerHTML = BillsUI({data: bills.sort((a, b) => new Date(b.date) - new Date(a.date))})
+        const onNavigate = document.body.innerHTML = ROUTES(ROUTES_PATH.Bills);
+
+        const createBills = new Bills({
+            document,
+            onNavigate,
+            store: mockStore,
+            localStorage: window.localStorage,
+        })
+
+        $.fn.modal = jest.fn()
+
+        jest.fn((e) => createBills.handleClickIconEye(e.target))
+
+        const icnEye = screen.getAllByTestId('icon-eye')[0]
+        userEvent.click(icnEye)
+        expect($.fn.modal).toHaveBeenCalled()
+        expect(screen.getByText('Justificatif')).toBeTruthy()
+        expect(screen.getByAltText('Bill')).toBeTruthy()
+    });
+});
