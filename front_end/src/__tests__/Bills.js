@@ -106,13 +106,14 @@ describe(`Given i'm a user connected as an employee`, () => {
 })
 
 // testing toggle modal
-// TODO FINISHING TEST INTEGRATION (fix it)
 describe(`When I am on Bills page, I click on the eye icon of a bill`, () => {
     test(`Then the modal should appear, and the picture should be displayed`, () => {
         Object.defineProperty(window, 'localStorage', {value: localStorageMock})
         localStorage.setItem('user', JSON.stringify({type: 'Employee', email: 'a@a'}));
         document.body.innerHTML = BillsUI({data: bills.sort((a, b) => new Date(b.date) - new Date(a.date))})
-        const onNavigate = document.body.innerHTML = ROUTES(ROUTES_PATH.Bills);
+        const onNavigate = (pathname) => {
+            document.body.innerHTML = ROUTES({ pathname })
+        }
 
         const createBills = new Bills({
             document,
@@ -122,11 +123,12 @@ describe(`When I am on Bills page, I click on the eye icon of a bill`, () => {
         })
 
         $.fn.modal = jest.fn()
-
-        jest.fn((e) => createBills.handleClickIconEye(e.target))
+        const onClickIconEye = jest.fn((e) => createBills.handleClickIconEye(e.target))
 
         const icnEye = screen.getAllByTestId('icon-eye')[0]
+        icnEye.addEventListener('click', onClickIconEye)
         userEvent.click(icnEye)
+
         expect($.fn.modal).toHaveBeenCalled()
         expect(screen.getByText('Justificatif')).toBeTruthy()
         expect(screen.getByAltText('Bill')).toBeTruthy()
