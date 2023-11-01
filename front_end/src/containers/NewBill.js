@@ -7,7 +7,7 @@ export default class NewBill {
     this.onNavigate = onNavigate;
     this.store = store;
     const formNewBill = this.document.querySelector(
-      `form[data-testid="form-new-bill"]`
+      `form[data-testid="form-new-bill"]`,
     );
     formNewBill.addEventListener("submit", this.handleSubmit);
     const file = this.document.querySelector(`input[data-testid="file"]`);
@@ -41,6 +41,7 @@ export default class NewBill {
           noContentType: true,
         },
       })
+      // fix bug number 3 : Allow only jpg, jpeg or png
       .then(({ fileUrl, key }) => {
         if (
           extension !== "jpg" &&
@@ -48,10 +49,10 @@ export default class NewBill {
           extension !== "png"
         ) {
           alert(
-            "Veillez sélectionner un fichier d'image valide (jpg, jpeg or png)"
+            "Veillez sélectionner un fichier d'image valide (jpg, jpeg or png)",
           );
           const input = this.document.querySelector(
-            `input[data-testid="file"]`
+            `input[data-testid="file"]`,
           );
           if (input.type === "file") {
             input.value = "";
@@ -69,7 +70,7 @@ export default class NewBill {
     e.preventDefault();
     console.log(
       'e.target.querySelector(`input[data-testid="datepicker"]`).value',
-      e.target.querySelector(`input[data-testid="datepicker"]`).value
+      e.target.querySelector(`input[data-testid="datepicker"]`).value,
     );
     const email = JSON.parse(localStorage.getItem("user")).email;
     const bill = {
@@ -77,7 +78,7 @@ export default class NewBill {
       type: e.target.querySelector(`select[data-testid="expense-type"]`).value,
       name: e.target.querySelector(`input[data-testid="expense-name"]`).value,
       amount: parseInt(
-        e.target.querySelector(`input[data-testid="amount"]`).value
+        e.target.querySelector(`input[data-testid="amount"]`).value,
       ),
       date: e.target.querySelector(`input[data-testid="datepicker"]`).value,
       vat: e.target.querySelector(`input[data-testid="vat"]`).value,

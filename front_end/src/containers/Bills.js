@@ -8,7 +8,7 @@ export default class {
     this.onNavigate = onNavigate;
     this.store = store;
     const buttonNewBill = document.querySelector(
-      `button[data-testid="btn-new-bill"]`
+      `button[data-testid="btn-new-bill"]`,
     );
     if (buttonNewBill)
       buttonNewBill.addEventListener("click", this.handleClickNewBill);
@@ -25,14 +25,14 @@ export default class {
   };
 
   handleClickIconEye = (icon) => {
-    console.log('icon =>', icon)
+    console.log("icon =>", icon);
     const billUrl = icon.getAttribute("data-bill-url");
-    console.log("billUrl =>", billUrl)
+    console.log("billUrl =>", billUrl);
     const imgWidth = Math.floor($("#modaleFile").width() * 0.5);
     $("#modaleFile")
       .find(".modal-body")
       .html(
-        `<div style='text-align: center;' class="bill-proof-container"><img width=${imgWidth} src=${billUrl} alt="Bill" /></div>`
+        `<div style='text-align: center;' class="bill-proof-container"><img width=${imgWidth} src=${billUrl} alt="Bill" /></div>`,
       );
     $("#modaleFile").modal("show");
   };
@@ -44,6 +44,7 @@ export default class {
         .list()
         .then((snapshot) => {
           const bills = snapshot
+            // fix bug 1: sort by date before mapping the data
             .sort((a, b) => new Date(b.date) - new Date(a.date))
             .map((doc) => {
               try {
