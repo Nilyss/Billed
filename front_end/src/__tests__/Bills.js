@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import 'whatwg-fetch' // https://www.npmjs.com/package/whatwg-fetch 'cause node-fetch isn't working
+// import 'whatwg-fetch' // https://www.npmjs.com/package/whatwg-fetch 'cause node-fetch isn't working on Arch Linux
 import {screen, waitFor} from "@testing-library/dom";
 import BillsUI from "../views/BillsUI.js";
 import {bills} from "../fixtures/bills.js";

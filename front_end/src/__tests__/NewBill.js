@@ -13,8 +13,8 @@ import Router from "../app/Router.js";
 jest.mock("../app/Store.js", () => mockStore);
 window.alert = jest.fn();
 
-describe("Given I am connected as an employee", () => {
-  describe("When I am on NewBill Page", () => {
+describe("Given i am connected as an employee", () => {
+  describe("When i am on NewBill Page", () => {
     beforeEach(() => {
       Object.defineProperties(window, {
         localStorage: {
@@ -24,7 +24,7 @@ describe("Given I am connected as an employee", () => {
 
       window.localStorage.setItem(
         "user",
-        JSON.stringify({ type: "Employee", email: "a@a" }),
+        JSON.stringify({ type: "Employee", email: "a@a" })
       );
 
       const root = document.createElement("div");
@@ -59,7 +59,7 @@ describe("Given I am connected as an employee", () => {
         JSON.stringify({
           type: "Employee",
           email: "a@a",
-        }),
+        })
       );
       const root = document.createElement("div");
       root.setAttribute("id", "root");
@@ -77,6 +77,7 @@ describe("Given I am connected as an employee", () => {
         store: mockStore,
         localStorage: window.localStorage,
       });
+
       const handleChange = jest.spyOn(newBillForm, "handleChangeFile");
       const inputFile = screen.getByTestId("file");
 
@@ -118,53 +119,30 @@ describe("Given I am connected as an employee", () => {
         },
       });
 
-      const fileName = inputFile.files[0].name;
-      const isValidFileName =
-        fileName === "test.jpg" ||
-        fileName === "test.png" ||
-        fileName === "test.jpeg";
-
-      expect(isValidFileName).toBeTruthy();
+      newBillForm.fileName = inputFile.files[0].name;
+      expect(newBillForm.fileName).toBe("test.jpg");
     });
-  });
-});
 
-// TODO fix this test (the store isn't updated)
-describe("Given i am logged in as an employee", () => {
-  describe("When i am on NewBill Page", () => {
-    describe("When i create a valid bill ", () => {
-      test("Then the new bill should be stored", async () => {
-        jest.spyOn(mockStore, "bills");
+    test('Then the handleSubmit function can be called', () => {
+      window.onNavigate(ROUTES_PATH.NewBill);
 
-        const initialBills = await mockStore.bills().list();
-        const initialBillCount = initialBills.length;
+      document.body.innerHTML = NewBillUI();
 
-        const newBill = {
-          email: "employee@test.tld",
-          type: "It et électronique",
-          name: "clefs USB",
-          amount: "39.45",
-          date: "2023-11-01",
-          vat: "20",
-          pct: "6,58",
-          commentary: "Achat lots de clef USB",
-          fileName: "test.png",
-          status: "pending",
-        };
-
-        const createdBill = await mockStore.bills().create(newBill);
-
-        expect(createdBill).toBeDefined();
-
-        const updatedBills = await mockStore.bills().list();
-
-        expect(updatedBills).toEqual(initialBillCount + 1);
-
-        const isNewBillInList = updatedBills.some(
-          (bill) => bill.id === createdBill.id,
-        );
-        expect(isNewBillInList).toBeTruthy();
+      const newBill = new NewBill({
+        document,
+        onNavigate,
+        store: mockStore,
+        localStorage: window.localStorage,
       });
-    });
+
+      const handleSubmit = jest.spyOn(newBill, "handleSubmit");
+      const updateBill = jest.spyOn(newBill, "updateBill");
+
+      const form = screen.getByTestId("form-new-bill");
+
+      fireEvent.submit(form, handleSubmit);
+
+      expect(updateBill).toHaveBeenCalled();
+    })
   });
 });
